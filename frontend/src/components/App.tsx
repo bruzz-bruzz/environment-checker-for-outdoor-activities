@@ -4,10 +4,6 @@ import axios from 'axios'
 import Card from './Card'
 import './App.css'
 export default function App(){
-  type Cookie = {
-    saved:string[],
-    theme?: 'light' | 'dark'
-  }
   const [name,setName] = useState("")
   const [cookies,setCookie] = useCookies(['user'])
   const [theme, setTheme] = useState<'light' | 'dark'>(cookies.user?.theme || 'light')
