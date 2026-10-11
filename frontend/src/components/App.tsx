@@ -2,6 +2,7 @@ import {useState,useEffect} from 'react'
 import {useCookies} from 'react-cookie'
 import axios from 'axios'
 import Card from './Card'
+import Github from './Github'
 import './App.css'
 export default function App(){
   const [name,setName] = useState("")
@@ -96,6 +97,7 @@ export default function App(){
           </div>
         )}
       </main>
+      <Github repo={"https://github.com/bruzz-bruzz/environment-checker-for-outdoor-activities"}/>
     </div>
   )
 }
