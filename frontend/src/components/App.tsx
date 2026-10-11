@@ -17,8 +17,12 @@ export default function App(){
   const [doListPref,setDoListPref] = useState(false)
   
   useEffect(() => {
-    setCookie('user', {...cookies.user, theme}, {path: '/'})
-  }, [theme, cookies.user, setCookie])
+    // Only update the cookie if the theme in the cookie is different from current theme
+    if (cookies.user?.theme !== theme) {
+      setCookie('user', {...cookies.user, theme}, {path: '/'})
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [theme])
 
   function toggleTheme() {
     setTheme(prev => prev === 'light' ? 'dark' : 'light')
@@ -48,7 +52,7 @@ export default function App(){
     }
   }
   return (
-    <div className={`${theme} min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100`}>
+    <div className={`${theme === 'dark' ? 'dark' : ''} min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100`}>
       <header className='p-6 bg-white dark:bg-gray-800 shadow-sm mb-8 flex justify-between items-center'>
         <h1 className='text-3xl font-bold text-center flex-grow'>Environment Checker for Outdoor Sports</h1>
         <button onClick={toggleTheme} className='p-2 rounded-lg bg-gray-200 dark:bg-gray-700'>
