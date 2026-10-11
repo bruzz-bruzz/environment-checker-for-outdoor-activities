@@ -9,22 +9,19 @@ export default function Card({label,val,iden}:Data){
         delete val['gb-defra-index']
         delete val['us-epa-index']
     }
-    console.log(val)
     return (
-        <div className='border border-black rounded-lg p-2 flex justify-center items-center flex-col'>
-            <div>
-                <h4 className='text-2xl'>{label}</h4>
-                {label === 'Air Quality: ' && (
-                    <div>
-                        {Object.keys(val).map((val2:string,idx)=>(
-                            <h4 key={idx}>{val2.toUpperCase()} : {val[val2]}</h4>
-                        ))}
-                    </div>
-                )}
-                {label !== 'Air Quality: ' && (
-                    <h4>{val} {iden}</h4>
-                )}
-            </div>
+        <div className='bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col gap-1 items-center text-center'>
+            <h4 className='text-sm font-semibold text-gray-500 uppercase tracking-wide'>{label}</h4>
+            {label === 'Air Quality: ' && (
+                <div className='text-lg font-bold text-gray-800'>
+                    {Object.keys(val).map((val2:string,idx)=>(
+                        <div key={idx}>{val2.toUpperCase()} : {val[val2]}</div>
+                    ))}
+                </div>
+            )}
+            {label !== 'Air Quality: ' && (
+                <h4 className='text-lg font-bold text-gray-900'>{val} {iden}</h4>
+            )}
         </div>
     )
 }

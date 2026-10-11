@@ -14,18 +14,16 @@ export default function App(){
   const [searched,setSearched] = useState(false)
   const [doListPref,setDoListPref] = useState(false)
   function listPreferences(){
-    console.log("B")
     return preferences.map((pref:string,idx:number)=>(
-      <div key={idx} onMouseEnter={()=>setDoListPref(true)} onMouseLeave={()=>setDoListPref(false)}>
-        <button className='cursor-pointer' onClick={()=>{
+      <div key={idx} className='flex justify-between items-center p-2 hover:bg-gray-100 rounded'>
+        <button className='cursor-pointer text-blue-600' onClick={()=>{
           setName(pref)
           setDoListPref(false)
-          console.log(name)
         }}>{pref}</button>
-        <button onClick={()=>{
+        <button className='text-red-500 text-xs' onClick={()=>{
           setPreferences(preferences.filter((pref2:string)=>pref2 !== pref))
           setCookie('user',{...cookies.user, preferences: preferences.filter((pref2:string)=>pref2 !== pref)}, {path: '/'})
-        }}>del</button>
+        }}>Delete</button>
       </div>
     ))
   }
@@ -38,36 +36,35 @@ export default function App(){
       setResult(res.data)
     }
   }
-  useEffect(()=>{
-    console.log(doListPref)
-  })
   return (
-    <div>
-      <div className='flex flex-col items-center justify-center h-screen bg-gray-100'>
-        <h1>Environment Checker for Outdoor Sports</h1>
-        <div>
-          <h3>Location: {name}</h3>
-          <input type='text' value={name} onMouseEnter={()=>setDoListPref(true)}
-           onChange={(e)=>{
-            setName(e.target.value)
-            setSearched(false)
-          }}/>
+    <div className='min-h-screen bg-gray-50 text-gray-900'>
+      <header className='p-6 bg-white shadow-sm mb-8'>
+        <h1 className='text-3xl font-bold text-center'>Environment Checker for Outdoor Sports</h1>
+      </header>
+      <main className='px-6 flex flex-col items-center gap-8'>
+        <div className='w-full max-w-lg flex flex-col gap-2 relative'>
+          <div className='flex gap-2'>
+            <input className='flex-grow p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 outline-none' type='text' placeholder='Enter location...' value={name} onMouseEnter={()=>setDoListPref(true)}
+             onChange={(e)=>{
+              setName(e.target.value)
+              setSearched(false)
+            }}/>
+            <button className='px-6 py-3 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 transition' onClick={search}>Search</button>
+            <button className='px-6 py-3 bg-gray-200 rounded-lg shadow-sm hover:bg-gray-300 transition' onClick={()=>{
+              setCookie('user',{...cookies.user, preferences: [...(cookies.user?.preferences || []), name]}, {path: '/'})
+              setPreferences([...preferences, name])
+            }}>Save</button>
+          </div>
           {doListPref === true && preferences.length > 0 && (
-            <div className='absolute bg-white border border-black rounded-lg p-2'>
+            <div className='absolute top-full left-0 w-full bg-white border border-gray-200 rounded-lg p-2 shadow-lg z-10' onMouseLeave={()=>setDoListPref(false)}>
               {listPreferences()}
             </div>
           )}
-          <button onClick={search}>Search</button>
-          <br/>
-          <button onClick={()=>{
-            setCookie('user',{...cookies.user, preferences: [...(cookies.user?.preferences || []), name]}, {path: '/'})
-            setPreferences([...preferences, name])
-          }}>Save</button>
         </div>
         {searched === true && result !== null && (
-          <div>
-            <h3>Current environment: </h3>
-            <div className='grid grid-cols-3'>
+          <div className='w-full max-w-6xl'>
+            <h3 className='text-2xl font-semibold mb-6'>Current environment:</h3>
+            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
               <Card label={"Location: "} val={result.name + ', ' + result.region + ', ' + result.country} iden={""} />
               <Card label={"Latitude/Longitude: "} val={result.lat + '/' + result.lon} iden={""} />
               <Card label={"Local time: "} val={result.time} iden={""} />
@@ -76,15 +73,15 @@ export default function App(){
               <Card label={"Chance of Snow: "} val={result.snowChance} iden={"%"} />
               <Card label={"Actual Temperature: "} val={result.temp} iden={"°C"} />
               <Card label={"Feels like: "} val={result.feelsLikeTemp} iden={"°C"}/>
-              <Card label={"Wind: "} val={`Speed: ${result.wind_speed}\nDegree: ${result.wind_degree}\nDirection:${result.wind_dir}`} iden={""} />
+              <Card label={"Wind: "} val={`Speed: ${result.wind_speed} / Direction: ${result.wind_dir}`} iden={""} />
               <Card label={"Pressure: "} val={result.pressure_mb} iden={"Mb"} />
               <Card label={"UV Index: "} val={result.uvIndex} iden={""} />
-              <Card label={"AQI Index: "} val={`${result.aqiIndex} (US-EPA-INDEX) / ${result.aqiIndex2} (GB-DEGRA-INDEX)`} iden={""} />
+              <Card label={"AQI Index: "} val={`${result.aqiIndex} (US) / ${result.aqiIndex2} (GB)`} iden={""} />
               <Card label={"Air Quality: "} val={result.airQuality} iden={""} />
             </div>
           </div>
         )}
-      </div>
+      </main>
     </div>
   )
 }
