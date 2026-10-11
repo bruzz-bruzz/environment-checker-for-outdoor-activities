@@ -3,10 +3,16 @@ import helmet from 'helmet'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import axios from 'axios'
+import rateLimit from 'express-rate-limit'
 import {body,validationResult} from 'express-validator'
 dotenv.config()
 const app = express()
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+})
 app.use(helmet())
+app.use(limiter)
 console.log(process.env.ORIGIN)
 app.use(cors({
     origin: process.env.ORIGIN,
