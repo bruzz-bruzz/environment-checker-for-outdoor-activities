@@ -5,18 +5,29 @@ import Card from './Card'
 import './App.css'
 export default function App(){
   type Cookie = {
-    saved:string[]
+    saved:string[],
+    theme?: 'light' | 'dark'
   }
   const [name,setName] = useState("")
   const [cookies,setCookie] = useCookies(['user'])
+  const [theme, setTheme] = useState<'light' | 'dark'>(cookies.user?.theme || 'light')
   const [preferences,setPreferences] = useState<string[]>(cookies.user?.preferences || [])
   const [result,setResult] = useState<null | any>(null)
   const [searched,setSearched] = useState(false)
   const [doListPref,setDoListPref] = useState(false)
+  
+  useEffect(() => {
+    setCookie('user', {...cookies.user, theme}, {path: '/'})
+  }, [theme, cookies.user, setCookie])
+
+  function toggleTheme() {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light')
+  }
+
   function listPreferences(){
     return preferences.map((pref:string,idx:number)=>(
-      <div key={idx} className='flex justify-between items-center p-2 hover:bg-gray-100 rounded'>
-        <button className='cursor-pointer text-blue-600' onClick={()=>{
+      <div key={idx} className='flex justify-between items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded'>
+        <button className='cursor-pointer text-blue-600 dark:text-blue-400' onClick={()=>{
           setName(pref)
           setDoListPref(false)
         }}>{pref}</button>
@@ -37,26 +48,29 @@ export default function App(){
     }
   }
   return (
-    <div className='min-h-screen bg-gray-50 text-gray-900'>
-      <header className='p-6 bg-white shadow-sm mb-8'>
-        <h1 className='text-3xl font-bold text-center'>Environment Checker for Outdoor Sports</h1>
+    <div className={`${theme} min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100`}>
+      <header className='p-6 bg-white dark:bg-gray-800 shadow-sm mb-8 flex justify-between items-center'>
+        <h1 className='text-3xl font-bold text-center flex-grow'>Environment Checker for Outdoor Sports</h1>
+        <button onClick={toggleTheme} className='p-2 rounded-lg bg-gray-200 dark:bg-gray-700'>
+            {theme === 'light' ? '🌙' : '☀️'}
+        </button>
       </header>
       <main className='px-6 flex flex-col items-center gap-8'>
         <div className='w-full max-w-lg flex flex-col gap-2 relative'>
           <div className='flex gap-2'>
-            <input className='flex-grow p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 outline-none' type='text' placeholder='Enter location...' value={name} onMouseEnter={()=>setDoListPref(true)}
+            <input className='flex-grow p-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-gray-800' type='text' placeholder='Enter location...' value={name} onMouseEnter={()=>setDoListPref(true)}
              onChange={(e)=>{
               setName(e.target.value)
               setSearched(false)
             }}/>
             <button className='px-6 py-3 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 transition' onClick={search}>Search</button>
-            <button className='px-6 py-3 bg-gray-200 rounded-lg shadow-sm hover:bg-gray-300 transition' onClick={()=>{
+            <button className='px-6 py-3 bg-gray-200 dark:bg-gray-700 rounded-lg shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition' onClick={()=>{
               setCookie('user',{...cookies.user, preferences: [...(cookies.user?.preferences || []), name]}, {path: '/'})
               setPreferences([...preferences, name])
             }}>Save</button>
           </div>
           {doListPref === true && preferences.length > 0 && (
-            <div className='absolute top-full left-0 w-full bg-white border border-gray-200 rounded-lg p-2 shadow-lg z-10' onMouseLeave={()=>setDoListPref(false)}>
+            <div className='absolute top-full left-0 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-2 shadow-lg z-10' onMouseLeave={()=>setDoListPref(false)}>
               {listPreferences()}
             </div>
           )}
