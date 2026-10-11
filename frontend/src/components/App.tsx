@@ -12,7 +12,7 @@ export default function App(){
   const [result,setResult] = useState<null | any>(null)
   const [searched,setSearched] = useState(false)
   const [doListPref,setDoListPref] = useState(false)
-  
+  const [loading,setLoading] = useState(false)
   useEffect(() => {
     // Only update the cookie if the theme in the cookie is different from current theme
     if (cookies.user?.theme !== theme) {
@@ -27,11 +27,11 @@ export default function App(){
 
   function listPreferences(){
     return preferences.map((pref:string,idx:number)=>(
-      <div key={idx} className='flex justify-between items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded'>
-        <button className='cursor-pointer text-blue-600 dark:text-blue-400' onClick={()=>{
+      <div key={idx} className='flex justify-between items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer rounded'  onClick={()=>{
           setName(pref)
           setDoListPref(false)
-        }}>{pref}</button>
+        }}>
+        <button className='text-blue-600 dark:text-blue-400'>{pref}</button>
         <button className='text-red-500 text-xs' onClick={()=>{
           setPreferences(preferences.filter((pref2:string)=>pref2 !== pref))
           setCookie('user',{...cookies.user, preferences: preferences.filter((pref2:string)=>pref2 !== pref)}, {path: '/'})
@@ -41,11 +41,13 @@ export default function App(){
   }
   async function search(){
     if(name.length > 0){
+      setLoading(true)
       setSearched(true)
       const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}`,{
           location:name
       })
       setResult(res.data)
+      setLoading(false)
     }
   }
   return (
@@ -76,7 +78,10 @@ export default function App(){
             </div>
           )}
         </div>
-        {searched === true && result !== null && (
+        {loading === true && (
+          <h1>Loading...</h1>
+        )}
+        {searched === true && result !== null && loading === false && (
           <div className='w-full max-w-6xl'>
             <h3 className='text-2xl font-semibold mb-6'>Current environment:</h3>
             <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
